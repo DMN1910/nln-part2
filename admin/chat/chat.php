@@ -703,28 +703,29 @@ $adminInitial = mb_substr($adminName, 0, 1, 'UTF-8');
         const res = await fetch(`${CHAT_SERVER}/api/messages/${id}`);
         const list = await res.json();
         let lastDate = null;
-        let html = `<div class="typing-indicator" id="typing-ind" style="display:none">Khách đang gõ<span class="dots"><span></span><span></span><span></span></span></div>`;
+let html = '';
 
-        if (!list.length) {
-          html = `<div class="typing-indicator" id="typing-ind" style="display:none"></div>
-            <div style="text-align:center;color:var(--muted);font-size:12.5px;padding:40px 0">
-              <i class="fas fa-comment-slash" style="font-size:22px;margin-bottom:8px;display:block"></i>Chưa có tin nhắn
-            </div>`;
-        } else {
-          list.forEach(msg => {
-            const d  = new Date(msg.created_at);
-            const ds = d.toLocaleDateString('vi-VN',{weekday:'long',day:'numeric',month:'long'});
-            if (ds !== lastDate) {
-              html += `<div class="date-sep"><span>${ds}</span></div>`;
-              lastDate = ds;
-            }
-            html += msgHTML(msg);
-          });
-        }
+if (!list.length) {
+  html = `<div style="text-align:center;color:var(--muted);font-size:12.5px;padding:40px 0">
+    <i class="fas fa-comment-slash" style="font-size:22px;margin-bottom:8px;display:block"></i>Chưa có tin nhắn
+  </div>
+  <div class="typing-indicator" id="typing-ind" style="display:none">Khách đang gõ<span class="dots"><span></span><span></span><span></span></span></div>`;
+} else {
+  list.forEach(msg => {
+    const d  = new Date(msg.created_at);
+    const ds = d.toLocaleDateString('vi-VN',{weekday:'long',day:'numeric',month:'long'});
+    if (ds !== lastDate) {
+      html += `<div class="date-sep"><span>${ds}</span></div>`;
+      lastDate = ds;
+    }
+    html += msgHTML(msg);
+  });
+  html += `<div class="typing-indicator" id="typing-ind" style="display:none">Khách đang gõ<span class="dots"><span></span><span></span><span></span></span></div>`;
+}
 
-        msgs.innerHTML = html;
-        scrollBot();
-      } catch(e) {}
+msgs.innerHTML = html;
+scrollBot();
+      } catch(e) { console.error(e); }
     }
 
     /* ── Message HTML ── */
