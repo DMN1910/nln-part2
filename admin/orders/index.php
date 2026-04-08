@@ -7,7 +7,6 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
     exit;
 }
 
-/* ── Xử lý cập nhật trạng thái inline (POST) ── */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_id'], $_POST['status'])) {
     $allowed = ['Chờ xác nhận', 'Đang xử lý', 'Đang giao', 'Hoàn tất', 'Đã hủy'];
     $newStatus = $_POST['status'];
@@ -420,7 +419,6 @@ function statusInfo(string $s): array {
                   <select name="status" class="status-select"
                           onchange="highlightConfirm(this)">
                     <?php
-                    // $statuses = ['Chờ xác nhận', 'Đang xử lý', 'Đang giao', 'Hoàn tất', 'Đã hủy'];
                     $statuses = ['Hoàn tất'];
                     foreach ($statuses as $st):
                     ?>
@@ -483,7 +481,6 @@ function statusInfo(string $s): array {
     searchInput.addEventListener('input', applyFilters);
     filterStatus.addEventListener('change', applyFilters);
 
-    /* ── Highlight nút Xác nhận khi dropdown thay đổi ── */
     function highlightConfirm(select) {
       const btn = select.closest('.status-form').querySelector('.btn-confirm');
       btn.style.background  = 'var(--green)';
@@ -491,7 +488,6 @@ function statusInfo(string $s): array {
       btn.style.borderColor = 'var(--green)';
     }
 
-    /* ── Tự cuộn tới row vừa update ── */
     const updatedRow = document.querySelector('.just-updated');
     if (updatedRow) {
       updatedRow.scrollIntoView({ behavior: 'smooth', block: 'center' });

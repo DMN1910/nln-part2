@@ -5,7 +5,6 @@ require_once __DIR__ . "/../../config/config.php";
 include __DIR__ . "/../../includes/header.php";
 include __DIR__ . "/../../includes/navbar.php";
 
-/* Check đăng nhập */
 if (!isset($_SESSION['user']) || !isset($_SESSION['user']['id'])) {
     die("Bạn cần đăng nhập để xem giỏ hàng.");
 }
@@ -47,7 +46,6 @@ foreach ($items as $item) {
 ?>
 
 <style>
-/* ── Giữ nguyên style chung từ các trang trước ── */
 .page-wrapper {
   max-width: 1360px;
   margin: 0 auto;

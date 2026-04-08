@@ -2,7 +2,7 @@
 require_once "../../config/database.php";
 require_once "../../config/config.php";
 
-// Handle POST (thêm danh mục)
+// Handle POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['name'] ?? '');
     if ($name !== '') {
@@ -232,9 +232,7 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
     .empty-state h3 { font-family: var(--font-display); font-size: 26px; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
     .empty-state p { font-size: 13.5px; color: var(--muted); }
 
-    /* ════════════════════════════════════════
-       MODAL
-    ════════════════════════════════════════ */
+    /* MODAL */
     .modal-overlay {
       position: fixed; inset: 0; z-index: 200;
       background: rgba(26,23,20,.48);
@@ -455,7 +453,7 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </table>
   </div>
 
-  <!-- ════ MODAL ════ -->
+  <!--  MODAL  -->
   <div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
     <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
 

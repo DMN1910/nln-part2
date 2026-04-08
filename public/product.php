@@ -1,7 +1,7 @@
 <?php
 require_once "../config/config.php";
 require_once "../config/database.php";
-include "../includes/header.php";  // gọi session_start() ở đây
+include "../includes/header.php"; 
 include "../includes/navbar.php";
 
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
@@ -10,7 +10,7 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 
 $id = (int)$_GET['id'];
 
-// Lấy thông tin sản phẩm
+// thông tin sản phẩm
 $stmt = $pdo->prepare("
     SELECT p.*, b.name AS brand_name, c.name AS category_name
     FROM products p
@@ -66,8 +66,6 @@ foreach ($reviews as $r) {
 $avgRating    = count($reviews) ? round($totalRating / count($reviews), 1) : 0;
 $totalReviews = count($reviews);
 
-// ── Kiểm tra quyền đánh giá (hoàn toàn backend) ──────────────────
-// Session key đúng là $_SESSION['user'] (xem AuthController / login.php)
 $canReview       = false;
 $alreadyReviewed = false;
 $notPurchased    = false;
@@ -462,7 +460,7 @@ if ($isLoggedIn) {
     </div>
   </div>
 
-  <!-- ══════════════ REVIEWS ══════════════ -->
+  <!--  REVIEWS  -->
   <div class="reviews-section">
 
     <div class="section-heading">

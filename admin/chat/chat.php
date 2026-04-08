@@ -56,8 +56,6 @@ $adminInitial = mb_substr($adminName, 0, 1, 'UTF-8');
       font-family: var(--font-body);
       background: var(--cream);
       color: var(--ink);
-      /* display: flex;
-      flex-direction: column; */
       min-height: 100vh;
       padding: 40px var(--page-pad) 0;
     }
@@ -510,7 +508,7 @@ $adminInitial = mb_substr($adminName, 0, 1, 'UTF-8');
       </div>
     </div>
 
-  </div><!-- /.workspace -->
+  </div>
 
   <div id="toast"></div>
 

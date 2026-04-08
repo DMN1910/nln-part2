@@ -11,7 +11,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
   <style>
-    /* ── Design tokens (matching storefront) ───────────── */
     :root {
       --gold: #b8860b;
       --gold-light: #d4a017;
@@ -56,9 +55,7 @@
       display: flex;
     }
 
-    /* ═══════════════════════════════════════════════════
-       SIDEBAR
-    ═══════════════════════════════════════════════════ */
+    /*  SIDEBAR */
     .sidebar {
       width: var(--sidebar-w);
       min-height: 100vh;
@@ -649,7 +646,7 @@
 
 <body>
 
-  <!-- ════════════════════ SIDEBAR ════════════════════ -->
+  <!--  SIDEBAR  -->
   <aside class="sidebar">
     <div class="sidebar-logo">
       <div class="logo-label">Hệ thống quản trị</div>
@@ -705,7 +702,7 @@
     </div>
   </aside>
 
-  <!-- ════════════════════ MAIN ════════════════════ -->
+  <!--  MAIN  -->
   <div class="main">
 
     <!-- Topbar -->
@@ -739,34 +736,6 @@
           <div class="date-month" id="js-month">Tháng 3, 2026</div>
         </div>
       </div>
-
-      <!-- Quick stats -->
-      <!-- <div class="section-heading">
-        <h2>Số liệu nhanh</h2>
-        <div class="section-gold-line"></div>
-      </div>
-      <div class="stats-row">
-        <div class="stat-card">
-          <div class="stat-label">Tổng đơn hàng</div>
-          <div class="stat-value">1,284</div>
-          <div class="stat-sub"><span class="stat-up">↑ 12%</span> so với tháng trước</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Sản phẩm</div>
-          <div class="stat-value">340</div>
-          <div class="stat-sub">Đang kinh doanh</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Người dùng</div>
-          <div class="stat-value">892</div>
-          <div class="stat-sub"><span class="stat-up">↑ 8%</span> đăng ký mới</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Doanh thu</div>
-          <div class="stat-value">48.2M</div>
-          <div class="stat-sub"><span class="stat-down">↓ 3%</span> so với tháng trước</div>
-        </div>
-      </div> -->
 
       <!-- Nav cards -->
       <div class="section-heading">
@@ -840,8 +809,8 @@
         </a>
 
       </div>
-    </div><!-- /content -->
-  </div><!-- /main -->
+    </div>
+  </div>
 
   <script>
     // Live clock + date

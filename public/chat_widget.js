@@ -1,6 +1,4 @@
 (function() {
-    // const CHAT_SERVER = 'https://v05c04k0-3000.asse.devtunnels.ms';
-    // const CHAT_SERVER = window.location.protocol + '//' + window.location.hostname + ':3000';
     const CHAT_SERVER = 'http://localhost:3000';
     const USER_ID = window.CHAT_USER_ID || 0;
     const USER_NAME = window.CHAT_USER_NAME || 'Khách';

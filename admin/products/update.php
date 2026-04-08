@@ -1,5 +1,4 @@
 <?php
-// admin/products/update.php
 session_start();
 require_once "../../includes/admin_auth.php";
 require_once "../../config/database.php";
@@ -26,7 +25,7 @@ if ($name === '' || $brand_id === 0 || $category_id === 0) {
 $pdo->prepare("UPDATE products SET name=?, brand_id=?, category_id=?, description=? WHERE id=?")
     ->execute([$name, $brand_id, $category_id, $description, $id]);
 
-// ==================== XỬ LÝ BIẾN THỂ ====================
+//  XỬ LÝ BIẾN THỂ 
 
 // Xóa những biến thể được đánh dấu xóa (nếu có)
 if (!empty($_POST['delete_variant'])) {
@@ -70,12 +69,11 @@ if (!empty($_POST['new_condition'])) {
     }
 }
 
-// ==================== XỬ LÝ HÌNH ẢNH ====================
+//  XỬ LÝ HÌNH ẢNH 
 
 // Xóa hình ảnh được chọn
 if (!empty($_POST['delete_image'])) {
     foreach ($_POST['delete_image'] as $img_id) {
-        // Lấy đường dẫn để xóa file vật lý
         $stmt = $pdo->prepare("SELECT image_path FROM product_images WHERE id = ? AND product_id = ?");
         $stmt->execute([(int)$img_id, $id]);
         $img = $stmt->fetch();

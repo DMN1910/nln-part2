@@ -294,7 +294,7 @@ $brands = $stmt->fetchAll(PDO::FETCH_ASSOC);
               </td>
               <td>
                 <div class="actions">
-                  <!-- Sửa (bạn có thể tạo edit.php sau) -->
+                  <!-- Sửa -->
                   <a href="edit_brand.php?id=<?= $brand['id'] ?>" class="btn-action btn-edit">
                     <i class="fas fa-pen"></i> Sửa
                   </a>

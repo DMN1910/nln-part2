@@ -4,7 +4,6 @@ require_once "../config/database.php";
 include "../includes/header.php";
 include "../includes/navbar.php";
 
-// ── Params ────────────────────────────────────────────────────────
 $q           = trim($_GET['search']      ?? '');
 $category_id = (int)($_GET['category_id'] ?? 0) ?: null;
 $brand_id    = (int)($_GET['brand_id']    ?? 0) ?: null;
@@ -12,11 +11,9 @@ $price_min   = (int)($_GET['price_min']   ?? 0) ?: null;
 $price_max   = (int)($_GET['price_max']   ?? 0) ?: null;
 $sort        = $_GET['sort'] ?? 'newest';
 
-// ── Sidebar data ──────────────────────────────────────────────────
 $allCategories = $pdo->query("SELECT id, name FROM categories ORDER BY name ASC")
                      ->fetchAll(PDO::FETCH_ASSOC);
 
-// Brands — nếu đã chọn category thì chỉ lấy brand thuộc category đó
 if ($category_id) {
     $bStmt = $pdo->prepare("
         SELECT DISTINCT b.id, b.name FROM brands b
@@ -34,10 +31,8 @@ if ($category_id) {
 }
 $allBrands = $bStmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Khoảng giá tối đa trong DB để làm slider range
 $maxPriceDB = (int)($pdo->query("SELECT COALESCE(MAX(sell_price),50000000) FROM product_variants")->fetchColumn());
 
-// ── Main query ────────────────────────────────────────────────────
 $sql = "
     SELECT
         p.id, p.name, p.description,
@@ -270,7 +265,7 @@ $sliderMin = $price_min ?: 0;
   }
   .filter-tag a:hover { background: var(--border); color: var(--ink); }
 
-  /* Product grid — same as index.php */
+  /* Product grid */
   .product-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
@@ -341,7 +336,7 @@ $sliderMin = $price_min ?: 0;
 
 <div class="search-wrapper">
 
-  <!-- ══ SIDEBAR ══ -->
+  <!--  SIDEBAR  -->
   <aside class="sidebar">
 
     <!-- Danh mục -->
@@ -575,7 +570,7 @@ $sliderMin = $price_min ?: 0;
 
   rangeMin.addEventListener('input', updateSlider);
   rangeMax.addEventListener('input', updateSlider);
-  updateSlider(); // init
+  updateSlider();
 
   function applySort(val) {
     const url = new URL(window.location.href);

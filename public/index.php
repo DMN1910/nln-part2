@@ -52,14 +52,14 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <style>
-/* ── Page wrapper ───────────────────────────────────── */
+/* ── Page wrapper  */
 .page-wrapper {
   max-width: 1360px;
   margin: 0 auto;
   padding: 48px 32px 100px;
 }
 
-/* ── Page header ────────────────────────────────────── */
+/* ── Page header  */
 .page-header {
   display: flex;
   align-items: flex-end;
@@ -95,7 +95,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
   padding-bottom: 3px;
 }
 
-/* ── Filter tags ────────────────────────────────────── */
+/* ── Filter tags  */
 .filter-bar {
   display: flex; align-items: center;
   gap: 8px; flex-wrap: wrap;
@@ -118,14 +118,14 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 .filter-tag a:hover { color: var(--gold); }
 
-/* ── Product grid ───────────────────────────────────── */
+/* ── Product grid  */
 .product-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
   gap: 24px;
 }
 
-/* ── Product card ───────────────────────────────────── */
+/* ── Product card  */
 .product-card {
   background: var(--white);
   border: 1.5px solid var(--border);
@@ -247,7 +247,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
   font-weight: 600;
 }
 
-/* ── Gold divider accent ────────────────────────────── */
+/* ── Gold divider accent  */
 .gold-line {
   width: 48px; height: 3px;
   background: linear-gradient(90deg, var(--gold), var(--gold-light));
@@ -255,7 +255,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
   margin-bottom: 2px;
 }
 
-/* ── Empty state ────────────────────────────────────── */
+/* ── Empty state  */
 .empty-state {
   text-align: center;
   padding: 100px 24px;

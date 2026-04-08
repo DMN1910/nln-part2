@@ -3,13 +3,12 @@ session_start();
 require_once "../../config/database.php";
 require_once "../../config/config.php";
 
-/* Kiểm tra quyền admin */
+
 if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
     header("Location: /camerashop/login.php");
     exit;
 }
 
-/* ==================== XỬ LÝ POST ==================== */
 
 // Thêm thương hiệu mới
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['name'])) {
@@ -80,7 +79,6 @@ $brands = $stmt->fetchAll(PDO::FETCH_ASSOC);
       padding: 48px 40px 100px;
     }
 
-    /* Toast */
     .toast {
       position: fixed; top: 24px; right: 24px; z-index: 999;
       background: var(--ink); color: white;
@@ -95,7 +93,6 @@ $brands = $stmt->fetchAll(PDO::FETCH_ASSOC);
     .toast.success { background: var(--success); }
     .toast.error   { background: var(--danger); }
 
-    /* Breadcrumb */
     .breadcrumb {
       display: flex; align-items: center; gap: 6px;
       font-size: 12px; color: var(--muted);
@@ -116,7 +113,6 @@ $brands = $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     .btn-back:hover { border-color: var(--gold); color: var(--gold); background: var(--gold-pale); }
 
-    /* Page Header */
     .page-header {
       display: flex; align-items: flex-end; justify-content: space-between;
       margin-bottom: 36px; padding-bottom: 24px;
@@ -140,7 +136,6 @@ $brands = $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     .btn-add:hover { background: var(--ink-soft); transform: translateY(-2px); box-shadow: var(--shadow-md); }
 
-    /* Table Card */
     .table-card {
       background: var(--white); border: 1.5px solid var(--border);
       border-radius: 14px; overflow: hidden; box-shadow: var(--shadow-sm);
@@ -210,7 +205,6 @@ $brands = $stmt->fetchAll(PDO::FETCH_ASSOC);
     .empty-icon { font-size: 48px; margin-bottom: 16px; color: var(--border-dark); }
     .empty-state h4 { font-size: 16px; margin-bottom: 6px; color: var(--ink-soft); }
 
-    /* Modal */
     .modal-overlay {
       position: fixed; inset: 0; z-index: 200;
       background: rgba(26,23,20,.48); backdrop-filter: blur(5px);
@@ -280,7 +274,6 @@ $brands = $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     .btn-submit:hover { background: var(--ink-soft); }
 
-    /* Confirm Modal */
     .confirm-overlay {
       position: fixed; inset: 0; z-index: 300;
       background: rgba(26,23,20,.55); backdrop-filter: blur(6px);
@@ -405,7 +398,7 @@ $brands = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </table>
   </div>
 
-  <!-- Modal Thêm -->
+  <!-- Modal Thêm thương hiệu mới-->
   <div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
     <div class="modal" id="modal">
       <div class="modal-header">
@@ -432,7 +425,7 @@ $brands = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
   </div>
 
-  <!-- Confirm Delete Modal -->
+  <!-- Xóa thương hiệu -->
   <div class="confirm-overlay" id="confirmOverlay">
     <div class="confirm-box">
       <div class="confirm-icon"><i class="fas fa-trash"></i></div>
@@ -451,7 +444,6 @@ $brands = $stmt->fetchAll(PDO::FETCH_ASSOC);
   </div>
 
   <script>
-    // ---- Toast ----
     function showToast(msg, type = 'success') {
       const toast = document.getElementById('toast');
       document.getElementById('toastMsg').textContent = msg;

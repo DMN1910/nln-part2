@@ -147,10 +147,10 @@ CREATE TABLE review_images (
 ALTER TABLE orders
     ADD COLUMN recipient_name   VARCHAR(100) NOT NULL AFTER user_id,
     ADD COLUMN recipient_phone  VARCHAR(20) NOT NULL AFTER recipient_name,
-    ADD COLUMN address_line     VARCHAR(255) NOT NULL AFTER recipient_phone,     -- số nhà, ngõ, đường...
-    ADD COLUMN ward             VARCHAR(100) NOT NULL AFTER address_line,         -- xã/phường
-    ADD COLUMN district         VARCHAR(100) NOT NULL AFTER ward,                 -- huyện/quận
-    ADD COLUMN province         VARCHAR(100) NOT NULL AFTER district,             -- tỉnh/thành phố
+    ADD COLUMN address_line     VARCHAR(255) NOT NULL AFTER recipient_phone,     
+    ADD COLUMN ward             VARCHAR(100) NOT NULL AFTER address_line,         
+    ADD COLUMN district         VARCHAR(100) NOT NULL AFTER ward,                
+    ADD COLUMN province         VARCHAR(100) NOT NULL AFTER district,            
     ADD COLUMN delivery_notes   TEXT NULL AFTER province;
 
 
@@ -182,7 +182,3 @@ CREATE TABLE IF NOT EXISTS shipping_addresses (
 git add .
 git commit -m "update"
 git push
-
-phải thêm:
-    hủy đơn hàng khi chưa được xác nhận từ admin cho user,
-    icon cho chatAI,

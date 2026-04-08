@@ -242,4 +242,3 @@ io.on('connection', (socket) => {
 const PORT = 3000;
 
 server.listen(PORT, '0.0.0.0', () => console.log(`Chat server chạy tại http://0.0.0.0:${PORT}`));
-// server.listen(PORT, () => console.log(`Chat server chạy tại http://localhost:${PORT}`));

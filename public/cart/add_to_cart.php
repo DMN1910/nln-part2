@@ -2,7 +2,6 @@
 session_start();
 require_once __DIR__ . "/../../config/database.php";
 
-/* Check đăng nhập theo AuthController */
 if (
     !isset($_SESSION['user']) ||
     !isset($_SESSION['user']['id'])

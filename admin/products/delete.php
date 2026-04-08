@@ -4,7 +4,6 @@ require_once "../../config/database.php";
 
 $id = $_GET['id'];
 
-/* xóa ảnh vật lý */
 $imgs = $pdo->prepare(
     "SELECT image_path FROM product_images WHERE product_id=?"
 );
@@ -15,7 +14,6 @@ foreach ($imgs as $img) {
     if (file_exists($file)) unlink($file);
 }
 
-/* xóa product (variant + image CASCADE) */
 $stmt = $pdo->prepare("DELETE FROM products WHERE id=?");
 $stmt->execute([$id]);
 

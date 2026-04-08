@@ -10,8 +10,6 @@ if (isset($_SESSION['user'])) {
     $chat_session_id = $_SESSION['chat_session_id'];
 }
 
-// $server_host = $_SERVER['HTTP_HOST']; // tự lấy host hiện tại
-// $iframe_src = "http://{$server_host}:7860/?user_id={$user_id}&session_id=" . urlencode($chat_session_id);
 $iframe_src = "http://localhost:7860/?user_id={$user_id}&session_id=" . urlencode($chat_session_id);
 ?>
 <style>

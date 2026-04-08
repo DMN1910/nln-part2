@@ -342,7 +342,6 @@ function statusLabel(string $s): array {
 
   <div class="layout">
 
-    <!-- LEFT: items + summary -->
     <div style="display:flex;flex-direction:column;gap:24px;">
 
       <!-- Items table -->
@@ -416,7 +415,6 @@ function statusLabel(string $s): array {
 
     </div>
 
-    <!-- RIGHT: sidebar cards -->
     <div style="display:flex;flex-direction:column;gap:24px;">
 
       <!-- Order info -->
@@ -478,7 +476,6 @@ function statusLabel(string $s): array {
         </div>
       </div>
 
-      <!-- ── SHIPPING ADDRESS CARD (MỚI) ── -->
       <?php
       $hasShipping = !empty($order['recipient_name']) && !empty($order['recipient_phone']);
       ?>
@@ -540,8 +537,8 @@ function statusLabel(string $s): array {
       </div>
       <?php endif; ?>
 
-    </div><!-- /sidebar -->
-  </div><!-- /layout -->
+    </div>
+  </div>
 
 </body>
 </html>

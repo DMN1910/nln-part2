@@ -3,7 +3,6 @@ session_start();
 require_once __DIR__ . "/../../config/database.php";
 require_once __DIR__ . "/../../config/config.php";
 
-/* ── Kiểm tra đăng nhập ── */
 if (!isset($_SESSION['user']['id'])) {
     header("Location: " . BASE_URL . "/pages/auth/login.php");
     exit;
@@ -31,7 +30,7 @@ if (!$address) {
 $pdo->beginTransaction();
 
 try {
-    /* ── Lấy giỏ hàng (lock để tránh race condition) ── */
+    /* ── Lấy giỏ hàng  ── */
     $stmt = $pdo->prepare("
         SELECT
             c.quantity,

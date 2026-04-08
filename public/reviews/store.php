@@ -2,19 +2,16 @@
 require_once "../../config/config.php";
 require_once "../../config/database.php";
 
-// session_start() đã được gọi trong config.php hoặc header nếu cần,
-// nhưng store.php không include header nên gọi thẳng ở đây
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// ── 1. Kiểm tra đăng nhập — key đúng là $_SESSION['user'] ─────────
 if (!isset($_SESSION['user'])) {
     header("Location: /camerashop/auth/login.php");
     exit;
 }
 
-// Chỉ chấp nhận POST
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header("Location: /camerashop/public/index.php");
     exit;
@@ -27,14 +24,14 @@ $comment   = trim($_POST['comment']     ?? '');
 
 $redirectBack = "/camerashop/public/product.php?id={$productId}#reviews";
 
-// ── 2. Validate input ─────────────────────────────────────────────
+// ── 2. Validate input 
 if ($productId <= 0 || $rating < 1 || $rating > 5) {
     $_SESSION['review_error'] = 'Dữ liệu không hợp lệ.';
     header("Location: $redirectBack");
     exit;
 }
 
-// ── 3. Sản phẩm tồn tại? ─────────────────────────────────────────
+// ── 3. Sản phẩm tồn tại 
 $chkProduct = $pdo->prepare("SELECT id, name FROM products WHERE id = ? LIMIT 1");
 $chkProduct->execute([$productId]);
 $product = $chkProduct->fetch(PDO::FETCH_ASSOC);
@@ -43,7 +40,7 @@ if (!$product) {
     exit;
 }
 
-// ── 4. Đã đánh giá rồi? (chống submit lại) ───────────────────────
+// ── 4. Đã đánh giá rồi 
 $chkDup = $pdo->prepare("SELECT id FROM reviews WHERE user_id = ? AND product_id = ? LIMIT 1");
 $chkDup->execute([$userId, $productId]);
 if ($chkDup->fetch()) {
@@ -52,7 +49,7 @@ if ($chkDup->fetch()) {
     exit;
 }
 
-// ── 5. Đã mua sản phẩm chưa? — khớp theo product_name ───────────
+// ── 5. Đã mua sản phẩm chưa
 $chkBought = $pdo->prepare("
     SELECT oi.id
     FROM order_items oi
@@ -71,7 +68,7 @@ if (!$bought) {
     exit;
 }
 
-// ── 6. Lưu review + ảnh ──────────────────────────────────────────
+// ── 6. Lưu review + ảnh 
 try {
     $pdo->beginTransaction();
 

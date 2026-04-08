@@ -3,7 +3,6 @@ session_start();
 require_once "../../config/database.php";
 require_once "../../config/config.php";
 
-/* CHỈ ADMIN */
 if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
     die("Bạn không có quyền truy cập");
 }

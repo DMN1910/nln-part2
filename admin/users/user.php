@@ -3,13 +3,11 @@ session_start();
 require_once "../../config/database.php";
 require_once "../../config/config.php";
 
-/* ✅ Chặn nếu không phải admin */
 if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
     header("Location: /camerashop/login.php");
     exit;
 }
 
-/* ✅ Xử lý đổi role */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['user_id'], $_POST['role'])) {
     $user_id = (int)$_POST['user_id'];
     $role = $_POST['role'];
@@ -26,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['user_id'], $_POST['ro
     exit;
 }
 
-/* ✅ Xử lý xóa người dùng */
+/* xóa người dùng */
 if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {
     $delete_id = (int)$_GET['delete'];
 
@@ -88,7 +86,7 @@ $users = $stmt->fetchAll();
       padding: 48px 40px 100px;
     }
 
-    /* Breadcrumb & Back */
+    /* Breadcrumb & Back*/
     .breadcrumb {
       display: flex; align-items: center; gap: 6px;
       font-size: 12px; color: var(--muted);

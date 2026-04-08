@@ -1,5 +1,4 @@
 <?php
-// CAMERASHOP/public/profile.php
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/database.php';
 
@@ -450,7 +449,7 @@ function initials(string $name): string {
     </nav>
   </div>
 
-  <!-- TAB: THÔNG TIN -->
+  <!-- THÔNG TIN -->
   <?php if ($tab === 'info'): ?>
   <div class="content-card">
     <div class="sec-title"><div class="sec-icon"><i class="fas fa-id-card"></i></div>Thông tin cá nhân</div>
@@ -481,7 +480,7 @@ function initials(string $name): string {
     </form>
   </div>
 
-  <!-- TAB: MẬT KHẨU -->
+  <!-- MẬT KHẨU -->
   <?php elseif ($tab === 'password'): ?>
   <div class="content-card">
     <div class="sec-title"><div class="sec-icon"><i class="fas fa-shield-alt"></i></div>Đổi mật khẩu</div>
@@ -522,7 +521,7 @@ function initials(string $name): string {
     </div>
   </div>
 
-  <!-- TAB: ĐƠN HÀNG -->
+  <!-- ĐƠN HÀNG -->
   <?php elseif ($tab === 'orders'): ?>
   <div class="content-card">
     <div class="sec-title"><div class="sec-icon"><i class="fas fa-shopping-bag"></i></div>Lịch sử đơn hàng</div>
@@ -581,7 +580,7 @@ function initials(string $name): string {
             </div>
           </div>
 
-          <!-- Modal chi tiết -->
+          <!-- chi tiết -->
           <div class="modal-overlay" id="<?= $mid ?>" onclick="handleOverlayClick(event,'<?= $mid ?>')">
             <div class="modal-box">
               <div class="modal-hd">
@@ -640,7 +639,7 @@ function initials(string $name): string {
     <?php endif; ?>
   </div>
 
-  <!-- TAB: ĐÁNH GIÁ -->
+  <!-- ĐÁNH GIÁ -->
   <?php elseif ($tab === 'reviews'): ?>
   <div class="content-card">
     <div class="sec-title"><div class="sec-icon"><i class="fas fa-star"></i></div>Đánh giá của tôi</div>
@@ -677,7 +676,7 @@ function initials(string $name): string {
 
 </div>
 
-<!-- Confirm hủy đơn -->
+<!-- hủy đơn -->
 <div class="confirm-overlay" id="confirmOverlay">
   <div class="confirm-box">
     <div class="confirm-icon"><i class="fas fa-times-circle"></i></div>

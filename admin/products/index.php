@@ -485,7 +485,7 @@ $categories   = (new Category($pdo))->all();
     </table>
   </div>
 
-  <!-- ══════════════ MODAL ══════════════ -->
+  <!--  MODAL  -->
   <div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
     <div class="modal" id="modal" role="dialog" aria-modal="true">
 
@@ -585,7 +585,7 @@ $categories   = (new Category($pdo))->all();
             </div>
           </div>
 
-        </div><!-- /.modal-body -->
+        </div>
         <div class="modal-footer">
           <button type="button" class="btn-cancel" onclick="closeModal()">Huỷ</button>
           <button type="submit" class="btn-submit"><i class="fas fa-check"></i> Lưu sản phẩm</button>
@@ -607,10 +607,10 @@ $categories   = (new Category($pdo))->all();
         </div>
       </form>
 
-    </div><!-- /.modal -->
-  </div><!-- /.modal-overlay -->
+    </div>
+  </div>
 
-  <!-- Variant template (hidden) -->
+  <!-- Variant template -->
   <template id="variantTpl">
     <div class="variant-card">
       <div class="variant-card-head">
@@ -645,7 +645,6 @@ $categories   = (new Category($pdo))->all();
     const categoriesData = <?= json_encode($categories, JSON_UNESCAPED_UNICODE) ?>;
     const overlay        = document.getElementById('modalOverlay');
 
-    /* ── open / close ── */
     function openModal() {
       overlay.classList.add('open');
       document.body.style.overflow = 'hidden';

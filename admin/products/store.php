@@ -5,7 +5,6 @@ require_once "../../config/database.php";
 
 $controller = new ProductController($pdo);
 
-/* 1. Lưu sản phẩm + biến thể */
 $variants = [];
 foreach ($_POST['condition'] as $i => $v) {
     $variants[] = [
@@ -18,7 +17,6 @@ foreach ($_POST['condition'] as $i => $v) {
 
 $product_id = $controller->store($_POST, $variants);
 
-/* 2. Upload ảnh vào uploads/products */
 $uploadDir = __DIR__ . "/../../uploads/products/";
 
 if (!is_dir($uploadDir)) {
@@ -41,14 +39,12 @@ foreach ($_FILES['images']['tmp_name'] as $i => $tmp) {
              VALUES (?, ?)"
         );
 
-        // ✅ CHỈ LƯU TÊN FILE
         $stmt->execute([
             $product_id,
             $fileName
         ]);
     }
 }
-
 
 header("Location: index.php");
 exit;

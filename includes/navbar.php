@@ -275,8 +275,6 @@ body {
 .no-brands { padding: 8px 16px 10px; font-size: 12px; color: var(--muted); font-style: italic; }
 </style>
 
-<!-- ══════════ TOP NAVBAR ══════════ -->
-<!-- ══════════ TOP NAVBAR ══════════ -->
 <nav class="topnav">
   <div class="inner">
     <a class="logo" href="<?= BASE_URL ?>/index.php">
@@ -301,7 +299,6 @@ body {
       <div class="nav-divider"></div>
 
       <?php if (isset($_SESSION['user'])): ?>
-        <!-- Phần Xin chào được biến thành link dẫn đến profile -->
         <a href="<?= BASE_URL ?>/profile.php" class="nav-btn user-greet" style="padding: 8px 12px;">
           Xin chào, <strong><?= htmlspecialchars($_SESSION['user']['name'] ?? $_SESSION['user']['username'] ?? 'User') ?></strong>
         </a>
@@ -319,7 +316,7 @@ body {
   </div>
 </nav>
 
-<!-- ══════════ CATEGORY BAR ══════════ -->
+<!--  CATEGORY BAR  -->
 <div class="catbar">
   <div class="inner">
     <div class="cat-item">
