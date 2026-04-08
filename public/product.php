@@ -176,7 +176,7 @@ if ($isLoggedIn) {
     display:flex; justify-content:space-between; align-items:center;
     width:100%; cursor:pointer; font-size:15px;
   }
-  .price { font-family:var(--font-display); font-size:22px; font-weight:700; color:var(--gold); }
+  .price { font-family:var(--font-body); font-size:16px; font-weight:700; color:var(--gold); }
 
   .quantity-group { display:flex; align-items:center; gap:16px; margin:24px 0; }
   .quantity-group label { font-weight:500; }

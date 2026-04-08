@@ -149,10 +149,10 @@ foreach ($items as $item) {
 }
 
 .total-amount {
-  font-size: 28px;
+  font-size: 20px;
   font-weight: 700;
   color: var(--gold);
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   margin: 20px 0;
   letter-spacing: .5px;
 }

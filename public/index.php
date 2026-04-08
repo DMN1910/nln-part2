@@ -220,8 +220,8 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 .price-from { font-size: 11px; color: var(--muted); }
 .price-value {
-  font-family: var(--font-display);
-  font-size: 22px; font-weight: 700;
+  font-family: var(--font-body);
+  font-size: 18px; font-weight: 700;
   color: var(--gold);
   letter-spacing: .3px;
 }

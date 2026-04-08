@@ -67,6 +67,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $success = 'Đổi mật khẩu thành công!';
         }
     }
+
+    if ($action === 'cancel_order') {
+        $orderId = (int)($_POST['order_id'] ?? 0);
+        $chk = $pdo->prepare("SELECT id FROM orders WHERE id = ? AND user_id = ? AND status = 'Chờ xác nhận'");
+        $chk->execute([$orderId, $userId]);
+        if ($chk->fetch()) {
+            $pdo->prepare("UPDATE orders SET status = 'Đã hủy' WHERE id = ?")->execute([$orderId]);
+            header('Location: ?tab=orders&cancelled=1');
+            exit;
+        } else {
+            $error = 'Không thể hủy đơn hàng này.';
+        }
+    }
 }
 
 $stOrders = $pdo->prepare("
@@ -166,268 +179,98 @@ function initials(string $name): string {
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font-body); background: var(--cream); color: var(--ink); min-height: 100vh; }
 
-    body {
-      font-family: var(--font-body);
-      background: var(--cream);
-      color: var(--ink);
-      min-height: 100vh;
-    }
-
-    /* ══════════════════════════════════════
-       HERO BANNER
-    ══════════════════════════════════════ */
-    .hero {
-      background: var(--ink);
-      padding: 48px 0 88px;
-      position: relative; overflow: hidden;
-    }
+    /* HERO */
+    .hero { background: var(--ink); padding: 48px 0 88px; position: relative; overflow: hidden; }
     .hero::before {
-      content: '';
-      position: absolute; inset: 0;
-      background:
-        radial-gradient(circle at 80% 50%, rgba(184,134,11,.18) 0%, transparent 55%),
-        radial-gradient(circle at 15% 30%, rgba(212,160,23,.07) 0%, transparent 40%);
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at 80% 50%, rgba(184,134,11,.18) 0%, transparent 55%),
+                  radial-gradient(circle at 15% 30%, rgba(212,160,23,.07) 0%, transparent 40%);
       pointer-events: none;
     }
-    /* wave divider */
     .hero::after {
-      content: '';
-      position: absolute; bottom: -1px; left: 0; right: 0; height: 56px;
-      background: var(--cream);
-      clip-path: ellipse(55% 100% at 50% 100%);
+      content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 56px;
+      background: var(--cream); clip-path: ellipse(55% 100% at 50% 100%);
     }
-    .hero-inner {
-      position: relative; z-index: 2;
-      max-width: 1200px; margin: 0 auto; padding: 0 32px;
-    }
-    .hero-eyebrow {
-      font-size: 11px; font-weight: 600; letter-spacing: 2.5px;
-      text-transform: uppercase; color: var(--gold-light);
-      margin-bottom: 8px;
-    }
-    .hero-title {
-      font-family: var(--font-display);
-      font-size: 36px; font-weight: 700;
-      color: var(--white); line-height: 1; letter-spacing: .3px;
-    }
+    .hero-inner { position: relative; z-index: 2; max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+    .hero-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: var(--gold-light); margin-bottom: 8px; }
+    .hero-title { font-family: var(--font-display); font-size: 36px; font-weight: 700; color: var(--white); line-height: 1; }
     .hero-sub { font-size: 13px; color: rgba(255,255,255,.45); margin-top: 6px; }
 
-    /* ══════════════════════════════════════
-       MAIN CONTAINER
-    ══════════════════════════════════════ */
-    .page-wrap {
-      max-width: 1200px; margin: 0 auto;
-      padding: 0 32px 80px;
-      margin-top: -3.2rem;
-      position: relative; z-index: 10;
-    }
+    /* LAYOUT */
+    .page-wrap { max-width: 1200px; margin: -3.2rem auto 0; padding: 0 32px 80px; position: relative; z-index: 10; }
 
-    /* ══════════════════════════════════════
-       PROFILE CARD (avatar row)
-    ══════════════════════════════════════ */
+    /* PROFILE CARD */
     .profile-card {
-      background: var(--white);
-      border: 1.5px solid var(--border);
-      border-radius: 16px;
-      padding: 28px 32px;
-      margin-bottom: 24px;
-      box-shadow: var(--shadow-md);
-      display: flex; align-items: center; gap: 24px;
-      animation: fadeUp .4s ease both;
+      background: var(--white); border: 1.5px solid var(--border); border-radius: 16px;
+      padding: 28px 32px; margin-bottom: 24px; box-shadow: var(--shadow-md);
+      display: flex; align-items: center; gap: 24px; animation: fadeUp .4s ease both;
     }
-
     .av-circle {
       width: 80px; height: 80px; border-radius: 50%; flex-shrink: 0;
       background: linear-gradient(135deg, var(--ink), var(--ink-soft));
       border: 3px solid var(--gold-light);
       display: flex; align-items: center; justify-content: center;
-      font-family: var(--font-display);
-      font-size: 32px; font-weight: 700; color: var(--gold-light);
-      position: relative; user-select: none;
-      box-shadow: 0 4px 16px rgba(184,134,11,.25);
+      font-family: var(--font-display); font-size: 32px; font-weight: 700; color: var(--gold-light);
+      position: relative; user-select: none; box-shadow: 0 4px 16px rgba(184,134,11,.25);
     }
-    .av-dot {
-      position: absolute; bottom: 4px; right: 4px;
-      width: 13px; height: 13px; border-radius: 50%;
-      background: var(--green); border: 2px solid var(--white);
-    }
-
+    .av-dot { position: absolute; bottom: 4px; right: 4px; width: 13px; height: 13px; border-radius: 50%; background: var(--green); border: 2px solid var(--white); }
     .av-info { flex: 1; min-width: 0; }
-    .av-name {
-      font-family: var(--font-display);
-      font-size: 24px; font-weight: 700; color: var(--ink); line-height: 1;
-    }
+    .av-name { font-family: var(--font-display); font-size: 24px; font-weight: 700; color: var(--ink); line-height: 1; }
     .av-email { font-size: 13px; color: var(--muted); margin-top: 4px; }
-    .av-role {
-      display: inline-flex; align-items: center; gap: 5px;
-      margin-top: 8px;
-      background: var(--gold-pale);
-      border: 1px solid var(--gold-border);
-      color: var(--gold);
-      font-size: 11px; font-weight: 600;
-      padding: 3px 12px; border-radius: 999px;
-      letter-spacing: .5px; text-transform: uppercase;
-    }
-
+    .av-role { display: inline-flex; align-items: center; gap: 5px; margin-top: 8px; background: var(--gold-pale); border: 1px solid var(--gold-border); color: var(--gold); font-size: 11px; font-weight: 600; padding: 3px 12px; border-radius: 999px; letter-spacing: .5px; text-transform: uppercase; }
     .av-stats { display: flex; gap: 32px; flex-shrink: 0; }
-    .av-stat  { text-align: center; }
-    .av-stat .n {
-      font-family: var(--font-display);
-      font-size: 28px; font-weight: 700; color: var(--gold); line-height: 1;
-    }
-    .av-stat .l { font-size: 11px; color: var(--muted); margin-top: 4px; letter-spacing: .3px; }
+    .av-stat { text-align: center; }
+    .av-stat .n { font-family: var(--font-display); font-size: 28px; font-weight: 700; color: var(--gold); line-height: 1; }
+    .av-stat .l { font-size: 11px; color: var(--muted); margin-top: 4px; }
     .av-divider { width: 1px; height: 48px; background: var(--border); align-self: center; }
 
-    /* ══════════════════════════════════════
-       FLASH MESSAGES
-    ══════════════════════════════════════ */
-    .flash {
-      display: flex; align-items: center; gap: 10px;
-      padding: 14px 18px; border-radius: 10px;
-      font-size: 13.5px; font-weight: 500;
-      margin-bottom: 20px;
-      animation: fadeUp .3s ease both;
-    }
+    /* FLASH */
+    .flash { display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-radius: 10px; font-size: 13.5px; font-weight: 500; margin-bottom: 20px; animation: fadeUp .3s ease both; }
     .flash.ok  { background: var(--green-pale);  color: var(--green);  border: 1px solid rgba(22,163,74,.2); }
     .flash.err { background: var(--danger-pale); color: var(--danger); border: 1px solid rgba(220,38,38,.2); }
     .flash i   { font-size: 15px; flex-shrink: 0; }
 
-    /* ══════════════════════════════════════
-       TABS
-    ══════════════════════════════════════ */
-    .tabs-wrap {
-      background: var(--white);
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      margin-bottom: 20px;
-      overflow: hidden;
-      box-shadow: var(--shadow-sm);
-      animation: fadeUp .4s .04s ease both;
-    }
+    /* TABS */
+    .tabs-wrap { background: var(--white); border: 1.5px solid var(--border); border-radius: 12px; margin-bottom: 20px; overflow: hidden; box-shadow: var(--shadow-sm); animation: fadeUp .4s .04s ease both; }
     .tabs-nav { display: flex; }
-    .tab-link {
-      display: flex; align-items: center; gap: 8px;
-      padding: 14px 22px;
-      font-size: 13.5px; font-weight: 600;
-      color: var(--muted); text-decoration: none;
-      border-bottom: 3px solid transparent;
-      transition: color .2s, border-color .2s, background .2s;
-      position: relative; white-space: nowrap;
-    }
+    .tab-link { display: flex; align-items: center; gap: 8px; padding: 14px 22px; font-size: 13.5px; font-weight: 600; color: var(--muted); text-decoration: none; border-bottom: 3px solid transparent; transition: color .2s, border-color .2s, background .2s; white-space: nowrap; }
     .tab-link i { font-size: 14px; }
     .tab-link:hover { color: var(--ink); background: var(--cream); }
-    .tab-link.active {
-      color: var(--gold);
-      border-bottom-color: var(--gold);
-      background: var(--gold-pale);
-    }
-    .tab-badge {
-      background: var(--ink); color: var(--white);
-      font-size: 10px; font-weight: 700;
-      padding: 1px 7px; border-radius: 999px; line-height: 1.7;
-    }
+    .tab-link.active { color: var(--gold); border-bottom-color: var(--gold); background: var(--gold-pale); }
+    .tab-badge { background: var(--ink); color: var(--white); font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 999px; line-height: 1.7; }
     .tab-link.active .tab-badge { background: var(--gold); }
 
-    /* ══════════════════════════════════════
-       CONTENT CARD
-    ══════════════════════════════════════ */
-    .content-card {
-      background: var(--white);
-      border: 1.5px solid var(--border);
-      border-radius: 14px;
-      padding: 32px;
-      box-shadow: var(--shadow-sm);
-      animation: fadeUp .4s .08s ease both;
-    }
-    .sec-title {
-      display: flex; align-items: center; gap: 10px;
-      font-size: 13px; font-weight: 600;
-      letter-spacing: 1px; text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 28px; padding-bottom: 16px;
-      border-bottom: 1.5px solid var(--border);
-    }
-    .sec-title .sec-icon {
-      width: 32px; height: 32px; border-radius: 8px;
-      background: var(--gold-pale); border: 1px solid var(--gold-border);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 13px; color: var(--gold);
-    }
+    /* CONTENT CARD */
+    .content-card { background: var(--white); border: 1.5px solid var(--border); border-radius: 14px; padding: 32px; box-shadow: var(--shadow-sm); animation: fadeUp .4s .08s ease both; }
+    .sec-title { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 28px; padding-bottom: 16px; border-bottom: 1.5px solid var(--border); }
+    .sec-title .sec-icon { width: 32px; height: 32px; border-radius: 8px; background: var(--gold-pale); border: 1px solid var(--gold-border); display: flex; align-items: center; justify-content: center; font-size: 13px; color: var(--gold); }
 
-    /* ══════════════════════════════════════
-       FORM ELEMENTS
-    ══════════════════════════════════════ */
+    /* FORM */
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
     .form-group { display: flex; flex-direction: column; gap: 7px; }
     .form-group.full { grid-column: 1/-1; }
-    .form-label {
-      font-size: 11.5px; font-weight: 600;
-      letter-spacing: .6px; text-transform: uppercase; color: var(--muted);
-    }
+    .form-label { font-size: 11.5px; font-weight: 600; letter-spacing: .6px; text-transform: uppercase; color: var(--muted); }
     .form-label .req { color: var(--gold); }
-    .form-input {
-      padding: 11px 14px;
-      border: 1.5px solid var(--border); border-radius: 9px;
-      font-family: var(--font-body); font-size: 14px; color: var(--ink);
-      background: var(--cream); outline: none;
-      transition: border-color .2s, box-shadow .2s, background .2s;
-    }
-    .form-input:focus {
-      border-color: var(--gold); background: var(--white);
-      box-shadow: 0 0 0 3px rgba(184,134,11,.10);
-    }
+    .form-input { padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 9px; font-family: var(--font-body); font-size: 14px; color: var(--ink); background: var(--cream); outline: none; transition: border-color .2s, box-shadow .2s, background .2s; }
+    .form-input:focus { border-color: var(--gold); background: var(--white); box-shadow: 0 0 0 3px rgba(184,134,11,.10); }
     .form-input:disabled { color: var(--border-dark); cursor: not-allowed; }
-    .form-input::placeholder { color: var(--border-dark); }
-
-    /* Password eye toggle */
     .pw-wrap { position: relative; }
-    .pw-eye {
-      position: absolute; right: 13px; top: 50%; transform: translateY(-50%);
-      cursor: pointer; color: var(--border-dark); font-size: 14px;
-      transition: color .2s;
-    }
+    .pw-eye { position: absolute; right: 13px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--border-dark); font-size: 14px; transition: color .2s; }
     .pw-eye:hover { color: var(--muted); }
-
-    /* Strength bar */
     .str-bar  { height: 3px; background: var(--border); border-radius: 3px; overflow: hidden; margin-top: 6px; }
     .str-fill { height: 100%; border-radius: 3px; width: 0; transition: all .35s; }
     .str-label { font-size: 11.5px; color: var(--muted); margin-top: 5px; }
-
-    /* Security note */
-    .security-note {
-      background: var(--gold-pale);
-      border: 1px solid var(--gold-border);
-      border-radius: 10px;
-      padding: 16px 18px;
-      margin-top: 24px; max-width: 460px;
-    }
+    .security-note { background: var(--gold-pale); border: 1px solid var(--gold-border); border-radius: 10px; padding: 16px 18px; margin-top: 24px; max-width: 460px; }
     .security-note p { font-size: 12px; font-weight: 600; color: var(--gold); margin-bottom: 6px; }
     .security-note ul { font-size: 12px; color: var(--muted); padding-left: 16px; line-height: 2; margin: 0; }
-
-    /* Submit button */
-    .btn-submit {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: var(--ink); color: var(--white);
-      font-family: var(--font-body); font-size: 13.5px; font-weight: 600;
-      padding: 10px 26px; border-radius: 9px; border: none; cursor: pointer;
-      box-shadow: var(--shadow-sm);
-      transition: background .2s, transform .15s, box-shadow .2s;
-    }
-    .btn-submit:hover {
-      background: var(--ink-soft);
-      transform: translateY(-2px); box-shadow: var(--shadow-md);
-    }
+    .btn-submit { display: inline-flex; align-items: center; gap: 8px; background: var(--ink); color: var(--white); font-family: var(--font-body); font-size: 13.5px; font-weight: 600; padding: 10px 26px; border-radius: 9px; border: none; cursor: pointer; box-shadow: var(--shadow-sm); transition: background .2s, transform .15s, box-shadow .2s; }
+    .btn-submit:hover { background: var(--ink-soft); transform: translateY(-2px); box-shadow: var(--shadow-md); }
     .form-meta { font-size: 12px; color: var(--border-dark); }
 
-    /* ══════════════════════════════════════
-       STATUS BADGES
-    ══════════════════════════════════════ */
-    .st-badge {
-      display: inline-flex; align-items: center; gap: 5px;
-      font-size: 11.5px; font-weight: 600;
-      padding: 4px 11px; border-radius: 999px; border: 1px solid transparent;
-    }
+    /* STATUS */
+    .st-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 600; padding: 4px 11px; border-radius: 999px; border: 1px solid transparent; }
     .st-badge::before { content:''; width:6px; height:6px; border-radius:50%; background:currentColor; }
     .st-pending   { background:var(--warn-pale);   color:var(--warn);   border-color:rgba(217,119,6,.2); }
     .st-confirmed { background:var(--blue-pale);   color:var(--blue);   border-color:rgba(37,99,235,.2); }
@@ -436,147 +279,74 @@ function initials(string $name): string {
     .st-cancel    { background:var(--danger-pale); color:var(--danger); border-color:rgba(220,38,38,.2); }
     .st-default   { background:var(--cream-dark);  color:var(--muted);  border-color:var(--border); }
 
-    /* ══════════════════════════════════════
-       FILTER BUTTONS
-    ══════════════════════════════════════ */
+    /* FILTER */
     .filter-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
-    .fbtn {
-      font-family: var(--font-body);
-      font-size: 12.5px; font-weight: 500;
-      padding: 6px 14px; border-radius: 7px;
-      border: 1.5px solid var(--border); background: var(--white);
-      color: var(--muted); cursor: pointer;
-      transition: border-color .2s, color .2s, background .2s;
-    }
-    .fbtn:hover   { border-color: var(--gold); color: var(--gold); }
-    .fbtn.active  { background: var(--ink); border-color: var(--ink); color: var(--white); }
+    .fbtn { font-family: var(--font-body); font-size: 12.5px; font-weight: 500; padding: 6px 14px; border-radius: 7px; border: 1.5px solid var(--border); background: var(--white); color: var(--muted); cursor: pointer; transition: border-color .2s, color .2s, background .2s; }
+    .fbtn:hover  { border-color: var(--gold); color: var(--gold); }
+    .fbtn.active { background: var(--ink); border-color: var(--ink); color: var(--white); }
 
-    /* ══════════════════════════════════════
-       ORDER CARDS
-    ══════════════════════════════════════ */
-    .ord-card {
-      border: 1.5px solid var(--border); border-radius: 12px;
-      overflow: hidden; margin-bottom: 12px;
-      transition: border-color .2s, box-shadow .2s;
-    }
+    /* ORDER CARDS */
+    .ord-card { border: 1.5px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 12px; transition: border-color .2s, box-shadow .2s; }
     .ord-card:hover { border-color: var(--gold-border); box-shadow: var(--shadow-sm); }
-
-    .ord-head {
-      background: var(--cream); padding: 12px 18px;
-      display: flex; align-items: center; justify-content: space-between;
-      flex-wrap: wrap; gap: 8px;
-      border-bottom: 1.5px solid var(--border);
-    }
-    .ord-id {
-      font-family: var(--font-display);
-      font-size: 17px; font-weight: 700; color: var(--ink);
-    }
+    .ord-head { background: var(--cream); padding: 12px 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; border-bottom: 1.5px solid var(--border); }
+    .ord-id { font-family: var(--font-display); font-size: 17px; font-weight: 700; color: var(--ink); }
     .ord-date { font-size: 12px; color: var(--muted); margin-left: 8px; }
-
-    .ord-body {
-      padding: 14px 18px;
-      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;
-    }
+    .ord-body { padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
     .ord-items-note { font-size: 13px; color: var(--muted); }
     .ord-items-note i { color: var(--gold); margin-right: 5px; }
-    .ord-price {
-      font-family: var(--font-display);
-      font-size: 20px; font-weight: 700; color: var(--gold);
-    }
-    .btn-detail {
-      display: inline-flex; align-items: center; gap: 6px;
-      font-family: var(--font-body); font-size: 12.5px; font-weight: 500;
-      padding: 7px 14px; border-radius: 7px;
-      background: var(--cream); border: 1.5px solid var(--border); color: var(--muted);
-      cursor: pointer; transition: all .2s;
-    }
+    .ord-price { font-family: var(--font-display); font-size: 20px; font-weight: 700; color: var(--gold); }
+    .btn-detail { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-body); font-size: 12.5px; font-weight: 500; padding: 7px 14px; border-radius: 7px; background: var(--cream); border: 1.5px solid var(--border); color: var(--muted); cursor: pointer; transition: all .2s; }
     .btn-detail:hover { background: var(--ink); border-color: var(--ink); color: var(--white); }
 
-    /* ══════════════════════════════════════
-       MODAL
-    ══════════════════════════════════════ */
-    .modal-overlay {
-      position: fixed; inset: 0; z-index: 300;
-      background: rgba(26,23,20,.5); backdrop-filter: blur(5px);
-      display: flex; align-items: center; justify-content: center; padding: 24px;
-      opacity: 0; pointer-events: none; transition: opacity .25s;
-    }
+    /* HỦY ĐƠN */
+    .btn-cancel-order { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 7px; background: var(--danger-pale); border: 1.5px solid #fecaca; color: var(--danger); font-family: var(--font-body); font-size: 12px; font-weight: 600; cursor: pointer; transition: all .2s; }
+    .btn-cancel-order:hover { background: var(--danger); color: white; border-color: var(--danger); }
+    .btn-cancel-order-lg { padding: 9px 18px; font-size: 13px; border-radius: 8px; }
+
+    /* MODAL */
+    .modal-overlay { position: fixed; inset: 0; z-index: 300; background: rgba(26,23,20,.5); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; padding: 24px; opacity: 0; pointer-events: none; transition: opacity .25s; }
     .modal-overlay.open { opacity: 1; pointer-events: all; }
-
-    .modal-box {
-      background: var(--white); border: 1.5px solid var(--border);
-      border-radius: 16px; width: 100%; max-width: 600px; max-height: 80vh;
-      display: flex; flex-direction: column;
-      box-shadow: var(--shadow-lg);
-      transform: translateY(20px) scale(.97); opacity: 0;
-      transition: transform .3s cubic-bezier(.34,1.56,.64,1), opacity .25s;
-    }
+    .modal-box { background: var(--white); border: 1.5px solid var(--border); border-radius: 16px; width: 100%; max-width: 600px; max-height: 80vh; display: flex; flex-direction: column; box-shadow: var(--shadow-lg); transform: translateY(20px) scale(.97); opacity: 0; transition: transform .3s cubic-bezier(.34,1.56,.64,1), opacity .25s; }
     .modal-overlay.open .modal-box { transform: translateY(0) scale(1); opacity: 1; }
-
-    .modal-hd {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 20px 24px; border-bottom: 1.5px solid var(--border);
-      flex-shrink: 0;
-    }
+    .modal-hd { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1.5px solid var(--border); flex-shrink: 0; }
     .modal-hd-left { display: flex; align-items: center; gap: 12px; }
-    .modal-icon {
-      width: 38px; height: 38px; border-radius: 10px;
-      background: var(--gold-pale); border: 1px solid var(--gold-border);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 15px; color: var(--gold);
-    }
+    .modal-icon { width: 38px; height: 38px; border-radius: 10px; background: var(--gold-pale); border: 1px solid var(--gold-border); display: flex; align-items: center; justify-content: center; font-size: 15px; color: var(--gold); }
     .modal-title { font-family: var(--font-display); font-size: 22px; font-weight: 700; color: var(--ink); }
     .modal-sub   { font-size: 12px; color: var(--muted); }
-    .btn-close-modal {
-      width: 32px; height: 32px; border-radius: 8px;
-      border: 1.5px solid var(--border); background: var(--cream);
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; color: var(--muted); font-size: 13px;
-      transition: border-color .2s, color .2s, background .2s;
-    }
+    .btn-close-modal { width: 32px; height: 32px; border-radius: 8px; border: 1.5px solid var(--border); background: var(--cream); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--muted); font-size: 13px; transition: border-color .2s, color .2s, background .2s; }
     .btn-close-modal:hover { border-color: var(--danger); color: var(--danger); background: var(--danger-pale); }
-
     .modal-body { overflow-y: auto; padding: 24px; flex: 1; }
-
-    .modal-item {
-      display: flex; align-items: center; gap: 14px;
-      padding: 12px 0; border-bottom: 1px solid var(--border);
-    }
+    .modal-item { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--border); }
     .modal-item:last-child { border-bottom: none; }
-    .modal-thumb {
-      width: 56px; height: 56px; border-radius: 8px;
-      border: 1.5px solid var(--border); overflow: hidden; flex-shrink: 0;
-      background: var(--cream-dark); display: flex; align-items: center; justify-content: center;
-    }
+    .modal-thumb { width: 56px; height: 56px; border-radius: 8px; border: 1.5px solid var(--border); overflow: hidden; flex-shrink: 0; background: var(--cream-dark); display: flex; align-items: center; justify-content: center; }
     .modal-thumb img { width: 100%; height: 100%; object-fit: cover; }
     .modal-thumb .ph { font-size: 20px; color: var(--border-dark); }
     .modal-item-name  { font-weight: 600; font-size: 13.5px; color: var(--ink); margin-bottom: 3px; }
     .modal-item-meta  { font-size: 12px; color: var(--muted); }
     .modal-item-price { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--gold); margin-left: auto; white-space: nowrap; }
-
-    .modal-ft {
-      padding: 16px 24px; border-top: 1.5px solid var(--border);
-      display: flex; justify-content: space-between; align-items: center;
-      flex-shrink: 0;
-    }
+    .modal-ft { padding: 16px 24px; border-top: 1.5px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
     .modal-ft-lbl { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); }
     .modal-ft-total { font-family: var(--font-display); font-size: 26px; font-weight: 700; color: var(--gold); }
 
-    /* ══════════════════════════════════════
-       REVIEW CARDS
-    ══════════════════════════════════════ */
-    .rev-card {
-      border: 1.5px solid var(--border); border-radius: 12px;
-      padding: 18px; margin-bottom: 12px;
-      transition: border-color .2s, box-shadow .2s;
-      display: flex; gap: 16px; align-items: flex-start;
-    }
+    /* CONFIRM MODAL */
+    .confirm-overlay { position: fixed; inset: 0; z-index: 400; background: rgba(26,23,20,.55); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; padding: 24px; opacity: 0; pointer-events: none; transition: opacity .25s; }
+    .confirm-overlay.open { opacity: 1; pointer-events: all; }
+    .confirm-box { background: var(--white); border-radius: 14px; border: 1.5px solid var(--border); max-width: 400px; width: 100%; padding: 28px; box-shadow: var(--shadow-lg); transform: scale(.95); opacity: 0; transition: all .25s; }
+    .confirm-overlay.open .confirm-box { transform: scale(1); opacity: 1; }
+    .confirm-icon { width: 48px; height: 48px; border-radius: 12px; background: var(--danger-pale); border: 1.5px solid #fecaca; display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--danger); margin-bottom: 16px; }
+    .confirm-title { font-family: var(--font-display); font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+    .confirm-msg { font-size: 13.5px; color: var(--muted); line-height: 1.6; margin-bottom: 22px; }
+    .confirm-msg strong { color: var(--ink); }
+    .confirm-btns { display: flex; gap: 10px; justify-content: flex-end; }
+    .btn-cfm-cancel { padding: 9px 20px; border-radius: 8px; background: var(--cream); border: 1.5px solid var(--border); color: var(--muted); cursor: pointer; font-family: var(--font-body); font-size: 14px; transition: all .2s; }
+    .btn-cfm-cancel:hover { border-color: var(--border-dark); color: var(--ink); }
+    .btn-cfm-delete { padding: 9px 20px; border-radius: 8px; background: var(--danger); color: white; border: none; font-weight: 600; cursor: pointer; font-family: var(--font-body); font-size: 14px; transition: all .2s; display: inline-flex; align-items: center; gap: 7px; }
+    .btn-cfm-delete:hover { background: #b91c1c; }
+
+    /* REVIEWS */
+    .rev-card { border: 1.5px solid var(--border); border-radius: 12px; padding: 18px; margin-bottom: 12px; transition: border-color .2s, box-shadow .2s; display: flex; gap: 16px; align-items: flex-start; }
     .rev-card:hover { border-color: var(--gold-border); box-shadow: var(--shadow-sm); }
-    .rev-thumb {
-      width: 52px; height: 52px; border-radius: 9px;
-      border: 1.5px solid var(--border); overflow: hidden; flex-shrink: 0;
-      background: var(--cream-dark); display: flex; align-items: center; justify-content: center;
-    }
+    .rev-thumb { width: 52px; height: 52px; border-radius: 9px; border: 1.5px solid var(--border); overflow: hidden; flex-shrink: 0; background: var(--cream-dark); display: flex; align-items: center; justify-content: center; }
     .rev-thumb img { width: 100%; height: 100%; object-fit: cover; }
     .rev-thumb .ph { font-size: 18px; color: var(--border-dark); }
     .rev-product { font-weight: 600; font-size: 14px; color: var(--ink); text-decoration: none; }
@@ -585,9 +355,7 @@ function initials(string $name): string {
     .rev-comment { font-size: 13px; color: var(--muted); line-height: 1.6; font-style: italic; }
     .rev-date   { font-size: 11.5px; color: var(--border-dark); margin-top: 8px; }
 
-    /* ══════════════════════════════════════
-       EMPTY STATE
-    ══════════════════════════════════════ */
+    /* EMPTY */
     .empty-state { text-align: center; padding: 64px 24px; }
     .empty-icon  { font-size: 48px; color: var(--border-dark); margin-bottom: 16px; }
     .empty-state h3 { font-family: var(--font-display); font-size: 24px; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
@@ -595,13 +363,7 @@ function initials(string $name): string {
     .empty-state a  { color: var(--gold); font-weight: 600; text-decoration: none; }
     .empty-state a:hover { text-decoration: underline; }
 
-    /* ══════════════════════════════════════
-       ANIMATIONS & UTILITIES
-    ══════════════════════════════════════ */
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 
     @media (max-width: 768px) {
       .profile-card { flex-wrap: wrap; }
@@ -612,6 +374,7 @@ function initials(string $name): string {
       .content-card { padding: 20px; }
       .page-wrap { padding: 0 16px 60px; }
       .tab-link .tab-lbl { display: none; }
+      .confirm-btns { flex-direction: column; }
     }
   </style>
 </head>
@@ -619,7 +382,6 @@ function initials(string $name): string {
 
 <?php include __DIR__ . '/../includes/navbar.php'; ?>
 
-<!-- Hero -->
 <div class="hero">
   <div class="hero-inner">
     <div class="hero-eyebrow">Tài khoản của bạn</div>
@@ -644,9 +406,7 @@ function initials(string $name): string {
         <?= $user['role']==='admin' ? 'Quản trị viên' : 'Khách hàng' ?>
       </div>
     </div>
-
     <div class="av-divider"></div>
-
     <div class="av-stats">
       <div class="av-stat">
         <div class="n"><?= count($orders) ?></div>
@@ -660,135 +420,98 @@ function initials(string $name): string {
       <div class="av-divider"></div>
       <div class="av-stat">
         <div class="n" style="font-size:1.1rem;">
-          <?= $totalSpent >= 1e6
-              ? number_format($totalSpent/1e6, 1).'M'
-              : number_format($totalSpent/1e3, 0).'K' ?>
+          <?= $totalSpent >= 1e6 ? number_format($totalSpent/1e6, 1).'M' : number_format($totalSpent/1e3, 0).'K' ?>
         </div>
         <div class="l">Đã chi (₫)</div>
       </div>
     </div>
   </div>
 
-  <!-- Flash messages -->
+  <!-- Flash -->
   <?php if ($success): ?>
-    <div class="flash ok" id="flashMsg">
-      <i class="fas fa-check-circle"></i> <?= htmlspecialchars($success) ?>
-    </div>
+    <div class="flash ok" id="flashMsg"><i class="fas fa-check-circle"></i> <?= htmlspecialchars($success) ?></div>
   <?php elseif ($error): ?>
-    <div class="flash err" id="flashMsg">
-      <i class="fas fa-exclamation-circle"></i> <?= htmlspecialchars($error) ?>
-    </div>
+    <div class="flash err" id="flashMsg"><i class="fas fa-exclamation-circle"></i> <?= htmlspecialchars($error) ?></div>
   <?php endif; ?>
 
   <!-- Tabs -->
   <div class="tabs-wrap">
     <nav class="tabs-nav">
-      <a class="tab-link <?= $tab==='info'     ? 'active' : '' ?>" href="?tab=info">
-        <i class="fas fa-user"></i><span class="tab-lbl">Thông tin</span>
-      </a>
-      <a class="tab-link <?= $tab==='password' ? 'active' : '' ?>" href="?tab=password">
-        <i class="fas fa-lock"></i><span class="tab-lbl">Mật khẩu</span>
-      </a>
-      <a class="tab-link <?= $tab==='orders'   ? 'active' : '' ?>" href="?tab=orders">
+      <a class="tab-link <?= $tab==='info'     ? 'active':'' ?>" href="?tab=info"><i class="fas fa-user"></i><span class="tab-lbl">Thông tin</span></a>
+      <a class="tab-link <?= $tab==='password' ? 'active':'' ?>" href="?tab=password"><i class="fas fa-lock"></i><span class="tab-lbl">Mật khẩu</span></a>
+      <a class="tab-link <?= $tab==='orders'   ? 'active':'' ?>" href="?tab=orders">
         <i class="fas fa-box"></i><span class="tab-lbl">Đơn hàng</span>
-        <?php if (count($orders)): ?>
-          <span class="tab-badge"><?= count($orders) ?></span>
-        <?php endif; ?>
+        <?php if (count($orders)): ?><span class="tab-badge"><?= count($orders) ?></span><?php endif; ?>
       </a>
-      <a class="tab-link <?= $tab==='reviews'  ? 'active' : '' ?>" href="?tab=reviews">
+      <a class="tab-link <?= $tab==='reviews'  ? 'active':'' ?>" href="?tab=reviews">
         <i class="fas fa-star"></i><span class="tab-lbl">Đánh giá</span>
-        <?php if (count($reviews)): ?>
-          <span class="tab-badge"><?= count($reviews) ?></span>
-        <?php endif; ?>
+        <?php if (count($reviews)): ?><span class="tab-badge"><?= count($reviews) ?></span><?php endif; ?>
       </a>
     </nav>
   </div>
 
-  <!-- ═══ TAB: THÔNG TIN ═══ -->
+  <!-- TAB: THÔNG TIN -->
   <?php if ($tab === 'info'): ?>
   <div class="content-card">
-    <div class="sec-title">
-      <div class="sec-icon"><i class="fas fa-id-card"></i></div>
-      Thông tin cá nhân
-    </div>
+    <div class="sec-title"><div class="sec-icon"><i class="fas fa-id-card"></i></div>Thông tin cá nhân</div>
     <form method="POST" action="?tab=info">
       <input type="hidden" name="action" value="update_profile" />
       <div class="form-grid">
         <div class="form-group">
           <label class="form-label">Họ và tên <span class="req">*</span></label>
-          <input class="form-input" type="text" name="name"
-                 value="<?= htmlspecialchars($user['name']) ?>" required maxlength="100" />
+          <input class="form-input" type="text" name="name" value="<?= htmlspecialchars($user['name']) ?>" required maxlength="100" />
         </div>
         <div class="form-group">
           <label class="form-label">Email <span class="req">*</span></label>
-          <input class="form-input" type="email" name="email"
-                 value="<?= htmlspecialchars($user['email']) ?>" required maxlength="150" />
+          <input class="form-input" type="email" name="email" value="<?= htmlspecialchars($user['email']) ?>" required maxlength="150" />
         </div>
         <div class="form-group">
           <label class="form-label">Vai trò</label>
-          <input class="form-input" type="text"
-                 value="<?= $user['role']==='admin' ? 'Quản trị viên' : 'Khách hàng' ?>" disabled />
+          <input class="form-input" type="text" value="<?= $user['role']==='admin' ? 'Quản trị viên' : 'Khách hàng' ?>" disabled />
         </div>
         <div class="form-group">
           <label class="form-label">Ngày tham gia</label>
-          <input class="form-input" type="text"
-                 value="<?= date('d/m/Y', strtotime($user['created_at'])) ?>" disabled />
+          <input class="form-input" type="text" value="<?= date('d/m/Y', strtotime($user['created_at'])) ?>" disabled />
         </div>
         <div class="form-group full" style="display:flex;align-items:center;gap:16px;padding-top:4px;">
-          <button type="submit" class="btn-submit">
-            <i class="fas fa-save"></i> Lưu thay đổi
-          </button>
+          <button type="submit" class="btn-submit"><i class="fas fa-save"></i> Lưu thay đổi</button>
           <span class="form-meta">ID tài khoản: #<?= $user['id'] ?></span>
         </div>
       </div>
     </form>
   </div>
 
-  <!-- ═══ TAB: MẬT KHẨU ═══ -->
+  <!-- TAB: MẬT KHẨU -->
   <?php elseif ($tab === 'password'): ?>
   <div class="content-card">
-    <div class="sec-title">
-      <div class="sec-icon"><i class="fas fa-shield-alt"></i></div>
-      Đổi mật khẩu
-    </div>
+    <div class="sec-title"><div class="sec-icon"><i class="fas fa-shield-alt"></i></div>Đổi mật khẩu</div>
     <form method="POST" action="?tab=password" style="max-width:460px;">
       <input type="hidden" name="action" value="change_password" />
-
       <div class="form-group" style="margin-bottom:18px;">
         <label class="form-label">Mật khẩu hiện tại <span class="req">*</span></label>
         <div class="pw-wrap">
-          <input class="form-input" style="padding-right:42px;" type="password"
-                 name="old_password" id="pw0" required autocomplete="current-password" />
+          <input class="form-input" style="padding-right:42px;" type="password" name="old_password" id="pw0" required autocomplete="current-password" />
           <span class="pw-eye" onclick="togglePw('pw0',this)"><i class="fas fa-eye"></i></span>
         </div>
       </div>
-
       <div class="form-group" style="margin-bottom:18px;">
         <label class="form-label">Mật khẩu mới <span class="req">*</span></label>
         <div class="pw-wrap">
-          <input class="form-input" style="padding-right:42px;" type="password"
-                 name="new_password" id="pw1" required autocomplete="new-password"
-                 oninput="checkStr(this.value)" />
+          <input class="form-input" style="padding-right:42px;" type="password" name="new_password" id="pw1" required autocomplete="new-password" oninput="checkStr(this.value)" />
           <span class="pw-eye" onclick="togglePw('pw1',this)"><i class="fas fa-eye"></i></span>
         </div>
         <div class="str-bar"><div class="str-fill" id="strFill"></div></div>
         <div class="str-label" id="strLabel"></div>
       </div>
-
       <div class="form-group" style="margin-bottom:24px;">
         <label class="form-label">Xác nhận mật khẩu mới <span class="req">*</span></label>
         <div class="pw-wrap">
-          <input class="form-input" style="padding-right:42px;" type="password"
-                 name="confirm_password" id="pw2" required autocomplete="new-password" />
+          <input class="form-input" style="padding-right:42px;" type="password" name="confirm_password" id="pw2" required autocomplete="new-password" />
           <span class="pw-eye" onclick="togglePw('pw2',this)"><i class="fas fa-eye"></i></span>
         </div>
       </div>
-
-      <button type="submit" class="btn-submit">
-        <i class="fas fa-key"></i> Đổi mật khẩu
-      </button>
+      <button type="submit" class="btn-submit"><i class="fas fa-key"></i> Đổi mật khẩu</button>
     </form>
-
     <div class="security-note" style="margin-top:28px;">
       <p><i class="fas fa-info-circle" style="margin-right:6px;"></i>Lưu ý bảo mật</p>
       <ul>
@@ -799,29 +522,22 @@ function initials(string $name): string {
     </div>
   </div>
 
-  <!-- ═══ TAB: ĐƠN HÀNG ═══ -->
+  <!-- TAB: ĐƠN HÀNG -->
   <?php elseif ($tab === 'orders'): ?>
   <div class="content-card">
-    <div class="sec-title">
-      <div class="sec-icon"><i class="fas fa-shopping-bag"></i></div>
-      Lịch sử đơn hàng
-    </div>
+    <div class="sec-title"><div class="sec-icon"><i class="fas fa-shopping-bag"></i></div>Lịch sử đơn hàng</div>
 
     <?php if (empty($orders)): ?>
       <div class="empty-state">
         <div class="empty-icon"><i class="fas fa-box-open"></i></div>
         <h3>Chưa có đơn hàng</h3>
-        <p>Bạn chưa đặt hàng lần nào.<br>
-           <a href="<?= BASE_URL ?>/index.php">Khám phá sản phẩm →</a>
-        </p>
+        <p>Bạn chưa đặt hàng lần nào.<br><a href="<?= BASE_URL ?>/index.php">Khám phá sản phẩm →</a></p>
       </div>
     <?php else:
       $allStatuses = array_values(array_unique(array_column($orders, 'status')));
     ?>
       <div class="filter-bar">
-        <button class="fbtn active" onclick="filterOrds(this,'')">
-          Tất cả (<?= count($orders) ?>)
-        </button>
+        <button class="fbtn active" onclick="filterOrds(this,'')">Tất cả (<?= count($orders) ?>)</button>
         <?php foreach ($allStatuses as $s):
           $cnt = count(array_filter($orders, fn($o) => $o['status']===$s));
         ?>
@@ -838,52 +554,50 @@ function initials(string $name): string {
           $itsItems = $iSt->fetchAll();
           [$stText, $stCls] = statusInfo($ord['status']);
           $mid = 'md_' . $ord['id'];
+          $canCancel = $ord['status'] === 'Chờ xác nhận';
+          $ordNum = str_pad($ord['id'], 6, '0', STR_PAD_LEFT);
         ?>
           <div class="ord-card" data-status="<?= htmlspecialchars($ord['status']) ?>">
             <div class="ord-head">
               <div>
-                <span class="ord-id">#<?= str_pad($ord['id'], 6, '0', STR_PAD_LEFT) ?></span>
-                <span class="ord-date">
-                  <i class="far fa-clock" style="margin:0 4px 0 8px;"></i>
-                  <?= date('d/m/Y H:i', strtotime($ord['created_at'])) ?>
-                </span>
+                <span class="ord-id">#<?= $ordNum ?></span>
+                <span class="ord-date"><i class="far fa-clock" style="margin:0 4px 0 8px;"></i><?= date('d/m/Y H:i', strtotime($ord['created_at'])) ?></span>
               </div>
-              <span class="st-badge <?= $stCls ?>"><?= $stText ?></span>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span class="st-badge <?= $stCls ?>"><?= $stText ?></span>
+                <?php if ($canCancel): ?>
+                  <button class="btn-cancel-order" onclick="openConfirm(<?= $ord['id'] ?>,'<?= $ordNum ?>')">
+                    <i class="fas fa-times-circle"></i> Hủy đơn
+                  </button>
+                <?php endif; ?>
+              </div>
             </div>
             <div class="ord-body">
-              <span class="ord-items-note">
-                <i class="fas fa-cube"></i><?= $ord['item_count'] ?> sản phẩm
-              </span>
+              <span class="ord-items-note"><i class="fas fa-cube"></i><?= $ord['item_count'] ?> sản phẩm</span>
               <div style="display:flex;align-items:center;gap:10px;">
                 <span class="ord-price"><?= number_format($ord['total_price']) ?>₫</span>
-                <button class="btn-detail" onclick="openModal('<?= $mid ?>')">
-                  <i class="fas fa-eye"></i> Chi tiết
-                </button>
+                <button class="btn-detail" onclick="openModal('<?= $mid ?>')"><i class="fas fa-eye"></i> Chi tiết</button>
               </div>
             </div>
           </div>
 
-          <!-- Modal -->
+          <!-- Modal chi tiết -->
           <div class="modal-overlay" id="<?= $mid ?>" onclick="handleOverlayClick(event,'<?= $mid ?>')">
             <div class="modal-box">
               <div class="modal-hd">
                 <div class="modal-hd-left">
                   <div class="modal-icon"><i class="fas fa-receipt"></i></div>
                   <div>
-                    <div class="modal-title">Đơn #<?= str_pad($ord['id'], 6, '0', STR_PAD_LEFT) ?></div>
+                    <div class="modal-title">Đơn #<?= $ordNum ?></div>
                     <div class="modal-sub"><?= date('d/m/Y H:i', strtotime($ord['created_at'])) ?> &nbsp;·&nbsp; <span class="st-badge <?= $stCls ?>" style="font-size:10.5px;padding:2px 9px;"><?= $stText ?></span></div>
                   </div>
                 </div>
-                <button class="btn-close-modal" onclick="closeModal('<?= $mid ?>')">
-                  <i class="fas fa-times"></i>
-                </button>
+                <button class="btn-close-modal" onclick="closeModal('<?= $mid ?>')"><i class="fas fa-times"></i></button>
               </div>
 
               <div class="modal-body">
                 <?php if (empty($itsItems)): ?>
-                  <p style="text-align:center;color:var(--muted);padding:24px 0;font-size:13.5px;">
-                    Không có sản phẩm trong đơn này.
-                  </p>
+                  <p style="text-align:center;color:var(--muted);padding:24px 0;font-size:13.5px;">Không có sản phẩm trong đơn này.</p>
                 <?php else: ?>
                   <?php foreach ($itsItems as $it): ?>
                     <div class="modal-item">
@@ -909,7 +623,15 @@ function initials(string $name): string {
 
               <div class="modal-ft">
                 <span class="modal-ft-lbl">Tổng cộng</span>
-                <span class="modal-ft-total"><?= number_format($ord['total_price']) ?>₫</span>
+                <div style="display:flex;align-items:center;gap:14px;">
+                  <?php if ($canCancel): ?>
+                    <button class="btn-cancel-order btn-cancel-order-lg"
+                      onclick="closeModal('<?= $mid ?>'); openConfirm(<?= $ord['id'] ?>,'<?= $ordNum ?>')">
+                      <i class="fas fa-times-circle"></i> Hủy đơn
+                    </button>
+                  <?php endif; ?>
+                  <span class="modal-ft-total"><?= number_format($ord['total_price']) ?>₫</span>
+                </div>
               </div>
             </div>
           </div>
@@ -918,14 +640,10 @@ function initials(string $name): string {
     <?php endif; ?>
   </div>
 
-  <!-- ═══ TAB: ĐÁNH GIÁ ═══ -->
+  <!-- TAB: ĐÁNH GIÁ -->
   <?php elseif ($tab === 'reviews'): ?>
   <div class="content-card">
-    <div class="sec-title">
-      <div class="sec-icon"><i class="fas fa-star"></i></div>
-      Đánh giá của tôi
-    </div>
-
+    <div class="sec-title"><div class="sec-icon"><i class="fas fa-star"></i></div>Đánh giá của tôi</div>
     <?php if (empty($reviews)): ?>
       <div class="empty-state">
         <div class="empty-icon"><i class="fas fa-star"></i></div>
@@ -938,25 +656,18 @@ function initials(string $name): string {
         <div class="rev-card">
           <div class="rev-thumb">
             <?php if (!empty($rv['product_img'])): ?>
-              <img src="<?= BASE_URL ?>/uploads/products/<?= htmlspecialchars($rv['product_img']) ?>" alt="">
+              <img src="<?= BASE_URL ?>/../uploads/products/<?= htmlspecialchars($rv['product_img']) ?>" alt="">
             <?php else: ?>
               <span class="ph"><i class="fas fa-camera"></i></span>
             <?php endif; ?>
           </div>
           <div style="flex:1;min-width:0;">
-            <a class="rev-product" href="<?= BASE_URL ?>/product.php?id=<?= $rv['product_id'] ?>">
-              <?= htmlspecialchars($rv['product_name']) ?>
-            </a>
-            <div class="rev-stars"><?= renderStars((int)$rv['rating']) ?>
-              <span style="font-size:11.5px;color:var(--muted);margin-left:5px;">(<?= $rv['rating'] ?>/5)</span>
-            </div>
+            <a class="rev-product" href="<?= BASE_URL ?>/product.php?id=<?= $rv['product_id'] ?>"><?= htmlspecialchars($rv['product_name']) ?></a>
+            <div class="rev-stars"><?= renderStars((int)$rv['rating']) ?> <span style="font-size:11.5px;color:var(--muted);margin-left:5px;">(<?= $rv['rating'] ?>/5)</span></div>
             <?php if (!empty($rv['comment'])): ?>
               <p class="rev-comment">"<?= htmlspecialchars($rv['comment']) ?>"</p>
             <?php endif; ?>
-            <div class="rev-date">
-              <i class="far fa-calendar-alt" style="margin-right:5px;"></i>
-              <?= date('d/m/Y', strtotime($rv['created_at'])) ?>
-            </div>
+            <div class="rev-date"><i class="far fa-calendar-alt" style="margin-right:5px;"></i><?= date('d/m/Y', strtotime($rv['created_at'])) ?></div>
           </div>
         </div>
       <?php endforeach; ?>
@@ -964,38 +675,49 @@ function initials(string $name): string {
   </div>
   <?php endif; ?>
 
-</div><!-- /page-wrap -->
+</div>
+
+<!-- Confirm hủy đơn -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <div class="confirm-icon"><i class="fas fa-times-circle"></i></div>
+    <div class="confirm-title">Hủy đơn hàng?</div>
+    <div class="confirm-msg">
+      Bạn có chắc muốn hủy đơn <strong id="confirmOrderNum"></strong>?<br>
+      Hành động này <strong>không thể hoàn tác</strong>.
+    </div>
+    <div class="confirm-btns">
+      <button class="btn-cfm-cancel" onclick="closeConfirm()"><i class="fas fa-arrow-left"></i> Quay lại</button>
+      <form method="POST" action="?tab=orders" style="display:inline;">
+        <input type="hidden" name="action"   value="cancel_order" />
+        <input type="hidden" name="order_id" id="confirmOrderId" value="" />
+        <button type="submit" class="btn-cfm-delete"><i class="fas fa-times-circle"></i> Xác nhận hủy</button>
+      </form>
+    </div>
+  </div>
+</div>
 
 <script>
-// Toggle show/hide password
 function togglePw(id, el) {
-  var inp = document.getElementById(id);
-  var ico = el.querySelector('i');
+  var inp = document.getElementById(id), ico = el.querySelector('i');
   if (inp.type === 'password') { inp.type = 'text'; ico.className = 'fas fa-eye-slash'; }
-  else                         { inp.type = 'password'; ico.className = 'fas fa-eye'; }
+  else { inp.type = 'password'; ico.className = 'fas fa-eye'; }
 }
 
-// Password strength
 function checkStr(v) {
   var s = 0;
-  if (v.length >= 6)           s++;
-  if (v.length >= 10)          s++;
-  if (/[A-Z]/.test(v))         s++;
-  if (/[0-9]/.test(v))         s++;
-  if (/[^A-Za-z0-9]/.test(v))  s++;
-  var idx    = Math.min(s, 5);
+  if (v.length >= 6) s++; if (v.length >= 10) s++;
+  if (/[A-Z]/.test(v)) s++; if (/[0-9]/.test(v)) s++; if (/[^A-Za-z0-9]/.test(v)) s++;
+  var idx = Math.min(s, 5);
   var widths = ['0%','20%','40%','60%','80%','100%'];
   var colors = ['transparent','#ef4444','#f97316','#eab308','#22c55e','#16a34a'];
   var labels = ['','Rất yếu','Yếu','Trung bình','Mạnh','Rất mạnh'];
-  var fill   = document.getElementById('strFill');
-  var lbl    = document.getElementById('strLabel');
-  fill.style.width      = widths[idx];
-  fill.style.background = colors[idx];
-  lbl.textContent       = labels[idx];
-  lbl.style.color       = colors[idx];
+  document.getElementById('strFill').style.width = widths[idx];
+  document.getElementById('strFill').style.background = colors[idx];
+  document.getElementById('strLabel').textContent = labels[idx];
+  document.getElementById('strLabel').style.color = colors[idx];
 }
 
-// Filter orders
 function filterOrds(btn, status) {
   document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
@@ -1004,7 +726,6 @@ function filterOrds(btn, status) {
   });
 }
 
-// Modal
 function openModal(id) {
   var el = document.getElementById(id);
   if (el) { el.classList.add('open'); document.body.style.overflow = 'hidden'; }
@@ -1016,22 +737,37 @@ function closeModal(id) {
 function handleOverlayClick(e, id) {
   if (e.target === document.getElementById(id)) closeModal(id);
 }
+
+function openConfirm(orderId, orderNum) {
+  document.getElementById('confirmOrderId').value = orderId;
+  document.getElementById('confirmOrderNum').textContent = '#' + orderNum;
+  document.getElementById('confirmOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeConfirm() {
+  document.getElementById('confirmOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
-    document.querySelectorAll('.modal-overlay.open').forEach(m => {
-      m.classList.remove('open'); document.body.style.overflow = '';
-    });
+    document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+    closeConfirm();
+    document.body.style.overflow = '';
   }
 });
-
-// Auto-hide flash message
 var fm = document.getElementById('flashMsg');
 if (fm) {
-  setTimeout(() => {
-    fm.style.transition = 'opacity .5s';
-    fm.style.opacity = '0';
-    setTimeout(() => fm.remove(), 500);
-  }, 3500);
+  setTimeout(() => { fm.style.transition='opacity .5s'; fm.style.opacity='0'; setTimeout(()=>fm.remove(),500); }, 3500);
+}
+
+if (new URLSearchParams(location.search).get('cancelled')) {
+  var f = document.createElement('div');
+  f.className = 'flash ok'; f.id = 'flashMsg';
+  f.innerHTML = '<i class="fas fa-check-circle"></i> Đã hủy đơn hàng thành công!';
+  var wrap = document.querySelector('.page-wrap');
+  wrap.insertBefore(f, document.querySelector('.tabs-wrap'));
+  setTimeout(() => { f.style.transition='opacity .5s'; f.style.opacity='0'; setTimeout(()=>f.remove(),500); }, 3500);
 }
 </script>
 </body>

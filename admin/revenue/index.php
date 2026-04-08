@@ -173,7 +173,7 @@ $recentOrders = $pdo->query("
       color: var(--gold);
     }
     .summary-value {
-      font-family: var(--font-display);
+      font-family: var(--font-body);
       font-size: 32px;
       font-weight: 700;
       color: var(--ink);

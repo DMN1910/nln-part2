@@ -398,7 +398,7 @@
     }
 
     .date-day {
-      font-family: var(--font-display);
+      font-family: var(--font-body);
       font-size: 42px;
       font-weight: 700;
       color: var(--gold-light);
@@ -557,8 +557,8 @@
     }
 
     .stat-value {
-      font-family: var(--font-display);
-      font-size: 28px;
+      font-family: var(--font-body);
+      font-size: 18px;
       font-weight: 700;
       color: var(--ink);
       line-height: 1;
@@ -741,7 +741,7 @@
       </div>
 
       <!-- Quick stats -->
-      <div class="section-heading">
+      <!-- <div class="section-heading">
         <h2>Số liệu nhanh</h2>
         <div class="section-gold-line"></div>
       </div>
@@ -766,7 +766,7 @@
           <div class="stat-value">48.2M</div>
           <div class="stat-sub"><span class="stat-down">↓ 3%</span> so với tháng trước</div>
         </div>
-      </div>
+      </div> -->
 
       <!-- Nav cards -->
       <div class="section-heading">

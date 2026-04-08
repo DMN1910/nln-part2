@@ -114,7 +114,7 @@ $brands = $stmt->fetchAll(PDO::FETCH_ASSOC);
       border-radius: 2px; margin-bottom: 8px;
     }
     .page-title {
-      font-family: var(--font-display);
+      font-family: var(--font-body);
       font-size: 36px; font-weight: 700; color: var(--ink);
     }
     .page-sub { font-size: 13px; color: var(--muted); margin-top: 6px; }

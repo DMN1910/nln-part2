@@ -138,7 +138,7 @@ function statusInfo(string $s): array {
     .stat-icon.c-blue   { color: var(--blue); }
     .stat-icon.c-green  { color: var(--green); }
     .stat-icon.c-danger { color: var(--danger); }
-    .stat-value { font-family: var(--font-display); font-size: 30px; font-weight: 700; color: var(--ink); line-height: 1; }
+    .stat-value { font-family: var(--font-body); font-size: 30px; font-weight: 700; color: var(--ink); line-height: 1; }
     .stat-label { font-size: 11px; color: var(--muted); letter-spacing: .5px; margin-top: 4px; }
 
     /* ── Toast ── */
@@ -420,7 +420,8 @@ function statusInfo(string $s): array {
                   <select name="status" class="status-select"
                           onchange="highlightConfirm(this)">
                     <?php
-                    $statuses = ['Chờ xác nhận', 'Đang xử lý', 'Đang giao', 'Hoàn tất', 'Đã hủy'];
+                    // $statuses = ['Chờ xác nhận', 'Đang xử lý', 'Đang giao', 'Hoàn tất', 'Đã hủy'];
+                    $statuses = ['Hoàn tất'];
                     foreach ($statuses as $st):
                     ?>
                       <option value="<?= $st ?>" <?= $order['status'] === $st ? 'selected' : '' ?>>
@@ -448,11 +449,7 @@ function statusInfo(string $s): array {
                   <a class="btn-action btn-view" href="view.php?id=<?= $order['id'] ?>">
                     <i class="fas fa-eye"></i> Xem
                   </a>
-                  <a class="btn-action btn-del"
-                     href="delete.php?id=<?= $order['id'] ?>"
-                     onclick="return confirm('Xóa đơn hàng #<?= $order['id'] ?>?')">
-                    <i class="fas fa-trash"></i> Xóa
-                  </a>
+                  
                 </div>
               </td>
             </tr>
